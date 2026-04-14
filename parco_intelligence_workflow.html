@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Parco Intelligence — Issuance Pathway Workflows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#080d0b;
+  --bg2:#0e1612;
+  --bg3:#111e18;
+  --g:#056052;
+  --g2:#0a8470;
+  --glit:#0dba9c;
+  --border:#1a2e28;
+  --border2:#24403a;
+  --text:#d4e8e2;
+  --muted:#6a9089;
+  --dim:#3a5a54;
+  --white:#f0faf7;
+  --auto:#0dba9c;
+  --ai:#f59e0b;
+  --human:#e05c5c;
+  --hybrid:#5b8def;
+  --sans:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --display:'Syne',sans-serif;
+}
+html{-webkit-font-smoothing:antialiased;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;}
+
+/* HEADER */
+header{
+  background:linear-gradient(180deg,#0d1a15 0%,var(--bg) 100%);
+  border-bottom:1px solid var(--border);
+  padding:40px 48px 32px;
+}
+.logo{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:.16em;color:var(--glit);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:6px;height:6px;border-radius:50%;background:var(--glit);}
+h1{font-family:var(--display);font-size:clamp(24px,3vw,36px);font-weight:800;color:var(--white);line-height:1.1;margin-bottom:10px;letter-spacing:-.02em;}
+h1 em{color:var(--glit);font-style:normal;}
+.header-sub{font-size:14px;color:var(--muted);max-width:680px;line-height:1.65;}
+
+/* LEGEND */
+.legend{display:flex;gap:24px;flex-wrap:wrap;padding:18px 48px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.leg-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.leg-auto{background:var(--auto);}
+.leg-ai{background:var(--ai);}
+.leg-hybrid{background:var(--hybrid);}
+.leg-human{background:var(--human);}
+
+/* TABS */
+.tabs{display:flex;gap:0;padding:0 48px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.tab{
+  font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:16px 28px;cursor:pointer;color:var(--muted);
+  border-bottom:2px solid transparent;
+  transition:all .2s;user-select:none;white-space:nowrap;
+}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--glit);border-bottom-color:var(--glit);}
+
+/* PATHWAY VIEW */
+.pathway{display:none;padding:32px 48px 64px;}
+.pathway.active{display:block;}
+
+/* PATHWAY HEADER */
+.pathway-meta{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;margin-bottom:36px;
+}
+.meta-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:16px 18px;
+}
+.meta-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.meta-val{font-family:var(--display);font-size:20px;font-weight:700;color:var(--white);line-height:1;}
+.meta-val.green{color:var(--glit);}
+.meta-val.sm{font-size:15px;margin-top:2px;}
+.meta-sub{font-size:11px;color:var(--dim);margin-top:4px;}
+
+/* PHASE */
+.phase{margin-bottom:8px;}
+.phase-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:10px 10px 0 0;
+  cursor:pointer;
+  user-select:none;
+}
+.phase-header:hover{background:#131f1a;}
+.phase-num{
+  font-family:var(--mono);font-size:10px;font-weight:500;
+  color:var(--glit);background:rgba(13,186,156,.1);
+  padding:3px 8px;border-radius:4px;letter-spacing:.06em;
+}
+.phase-title{font-family:var(--display);font-size:13px;font-weight:700;color:var(--white);letter-spacing:.04em;text-transform:uppercase;flex:1;}
+.phase-stats{display:flex;gap:12px;align-items:center;}
+.phase-tag{font-size:10px;padding:3px 10px;border-radius:100px;font-weight:600;letter-spacing:.06em;}
+.pt-auto{background:rgba(13,186,156,.12);color:var(--auto);}
+.pt-ai{background:rgba(245,158,11,.12);color:var(--ai);}
+.pt-human{background:rgba(224,92,92,.12);color:var(--human);}
+.pt-hybrid{background:rgba(91,141,239,.12);color:var(--hybrid);}
+.phase-toggle{color:var(--muted);font-size:16px;transition:transform .2s;}
+.phase.collapsed .phase-toggle{transform:rotate(-90deg);}
+
+/* STEPS */
+.steps{
+  background:var(--bg2);border:1px solid var(--border);border-top:none;
+  border-radius:0 0 10px 10px;overflow:hidden;
+}
+.phase.collapsed .steps{display:none;}
+
+.step{
+  display:grid;
+  grid-template-columns:56px 1fr auto;
+  gap:0;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.step:last-child{border-bottom:none;}
+.step::before{
+  content:'';
+  position:absolute;left:0;top:0;bottom:0;width:3px;
+}
+.step.auto::before{background:var(--auto);}
+.step.ai::before{background:var(--ai);}
+.step.human::before{background:var(--human);}
+.step.hybrid::before{background:var(--hybrid);}
+
+.step-num{
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:18px 0 0;
+  font-family:var(--mono);font-size:11px;font-weight:500;color:var(--dim);
+}
+.step-body{padding:18px 20px 18px 4px;}
+.step-name{
+  font-family:var(--display);font-size:13px;font-weight:700;
+  color:var(--white);margin-bottom:4px;
+}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px;}
+.step-tags{display:flex;flex-wrap:wrap;gap:6px;}
+
+.badge{
+  font-size:10px;font-weight:600;letter-spacing:.04em;
+  padding:3px 9px;border-radius:4px;white-space:nowrap;
+  font-family:var(--mono);
+}
+.b-tool{background:rgba(13,186,156,.08);color:var(--glit);border:1px solid rgba(13,186,156,.15);}
+.b-auto{background:rgba(13,186,156,.12);color:var(--auto);}
+.b-ai{background:rgba(245,158,11,.12);color:var(--ai);}
+.b-human{background:rgba(224,92,92,.12);color:var(--human);}
+.b-hybrid{background:rgba(91,141,239,.12);color:var(--hybrid);}
+
+.step-right{
+  padding:18px 20px 18px 0;
+  display:flex;flex-direction:column;
+  align-items:flex-end;gap:6px;min-width:120px;
+}
+.save-pill{
+  font-size:10px;font-weight:600;letter-spacing:.04em;
+  padding:3px 9px;border-radius:100px;
+  background:rgba(13,186,156,.1);color:var(--glit);
+  border:1px solid rgba(13,186,156,.2);white-space:nowrap;
+}
+.cost-pill{
+  font-size:10px;font-weight:600;
+  padding:3px 9px;border-radius:100px;
+  background:rgba(245,158,11,.1);color:var(--ai);
+  border:1px solid rgba(245,158,11,.2);white-space:nowrap;
+}
+.human-gate{
+  font-size:10px;font-weight:600;letter-spacing:.04em;
+  padding:3px 9px;border-radius:4px;
+  background:rgba(224,92,92,.1);color:var(--human);
+  border:1px solid rgba(224,92,92,.2);white-space:nowrap;
+}
+
+/* SAVINGS SUMMARY */
+.savings-bar{
+  margin-top:32px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:12px;
+  padding:28px 32px;
+  display:grid;grid-template-columns:1fr 1fr;gap:32px;
+}
+.savings-title{
+  font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:20px;
+}
+.savings-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.savings-row:last-child{border-bottom:none;}
+.savings-label{color:var(--muted);}
+.savings-parco{color:var(--glit);font-weight:600;}
+.savings-trad{color:var(--human);font-weight:600;}
+
+/* AUTOMATION BREAKDOWN */
+.automation-ring{
+  display:flex;align-items:center;gap:24px;
+}
+.ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0;}
+.ring-svg{transform:rotate(-90deg);}
+.ring-label{
+  position:absolute;inset:0;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;
+}
+.ring-pct{font-family:var(--display);font-size:18px;font-weight:800;color:var(--glit);}
+.ring-sub{font-size:9px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+.ring-legend{flex:1;}
+.rl-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding:3px 0;}
+.rl-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+/* CONNECTOR LINE */
+.connector{
+  display:flex;flex-direction:column;align-items:center;
+  padding:0;height:24px;
+}
+.connector-line{width:1px;flex:1;background:linear-gradient(var(--border2),var(--border));}
+
+/* DISCLAIMER */
+.disclaimer{
+  margin-top:32px;padding:20px 24px;
+  background:rgba(224,92,92,.06);border:1px solid rgba(224,92,92,.15);
+  border-radius:8px;font-size:11px;color:#a07070;line-height:1.65;
+}
+.disclaimer strong{color:#d08080;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="logo-dot"></span>Parco Intelligence</div>
+  <h1>Issuance Pathway <em>AI Workflow</em></h1>
+  <p class="header-sub">Full start-to-completion workflows for all three regulatory pathways — showing each step, the AI or human handling it, tools used, and where automation compresses time and cost. Color coding: <span style="color:var(--auto)">●</span> Fully automated &nbsp;<span style="color:var(--ai)">●</span> AI-assisted + human review &nbsp;<span style="color:var(--hybrid)">●</span> Hybrid &nbsp;<span style="color:var(--human)">●</span> Human required</p>
+</header>
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot leg-auto"></div><strong style="color:var(--text)">Automated</strong> — No human needed; runs via BullMQ workers, smart contracts, or platform logic</div>
+  <div class="leg-item"><div class="leg-dot leg-ai"></div><strong style="color:var(--text)">AI-Assisted</strong> — Claude API does heavy lifting; human reviews and approves output</div>
+  <div class="leg-item"><div class="leg-dot leg-hybrid"></div><strong style="color:var(--text)">Hybrid</strong> — AI and human work in parallel; neither can complete without the other</div>
+  <div class="leg-item"><div class="leg-dot leg-human"></div><strong style="color:var(--text)">Human Gate</strong> — Requires human judgment; AI may support but cannot replace</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('llc')">01 — Series LLC</div>
+  <div class="tab" onclick="switchTab('regd')">02 — Reg D 506(b)</div>
+  <div class="tab" onclick="switchTab('rega')">03 — Reg A+</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PATHWAY 01: SERIES LLC
+════════════════════════════════════════ -->
+<div class="pathway active" id="pw-llc">
+
+  <div class="pathway-meta">
+    <div class="meta-card">
+      <div class="meta-label">Pathway</div>
+      <div class="meta-val sm green">Series LLC / Investor Club</div>
+      <div class="meta-sub">Phase 1 — Live</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Time to Live</div>
+      <div class="meta-val green">2–6 wks</div>
+      <div class="meta-sub">vs. 3–6 months traditional</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Issuance Cost</div>
+      <div class="meta-val green">1.5–3%</div>
+      <div class="meta-sub">vs. $20K–50K legal fees</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Investor Eligibility</div>
+      <div class="meta-val sm">Anyone (KYC)</div>
+      <div class="meta-sub">No accreditation required</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Min Investment</div>
+      <div class="meta-val green">$50</div>
+      <div class="meta-sub">vs. $50K+ syndication min</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Automation Rate</div>
+      <div class="meta-val green">74%</div>
+      <div class="meta-sub">of steps fully automated</div>
+    </div>
+  </div>
+
+  <!-- Phase 0 -->
+  <div class="phase" id="ph-llc-0">
+    <div class="phase-header" onclick="togglePhase('llc-0')">
+      <span class="phase-num">PHASE 00</span>
+      <span class="phase-title">Lead Capture &amp; Tokenizer Onboarding</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-auto">Mostly Automated</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step hybrid">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <div class="step-name">Pre-qualification Form (Bubble Website)</div>
+          <div class="step-desc">Tokenizer lands on Bubble site and completes pre-qual questions: property type, estimated value, equity %, rental income, target investor geography. Form validates in real-time. If profile matches Series LLC criteria, generates a signed onboarding link routing to the Parco app.</div>
+          <div class="step-tags">
+            <span class="badge b-hybrid">Hybrid</span>
+            <span class="badge b-tool">Bubble</span>
+            <span class="badge b-tool">Claude API (form scoring)</span>
+            <span class="badge b-tool">Signed JWT link</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Lead qualified in &lt;5 min</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <div class="step-name">Live Pathway Confidence Scoring</div>
+          <div class="step-desc">As the tokenizer completes the form, Claude API scores all applicable pathways (Series LLC, Reg D, Reg A+) in real-time on a 0–100 confidence scale. Scores update per field. Series LLC primary recommendation displayed before submission. No human intervention needed.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Claude API (claude-sonnet-4-20250514)</span>
+            <span class="badge b-tool">Pathway scoring prompt</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Replaces $5K counsel consultation</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <div class="step-name">Tokenizer Signup &amp; Role Assignment</div>
+          <div class="step-desc">Tokenizer signs up via Clerk auth. The signed onboarding link auto-assigns TOKENIZER role. A draft TokenizationSubmission record is created in PostgreSQL. User lands in Pre-Tokenize Dashboard with submission ID pre-loaded. Zero manual setup.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Clerk Auth</span>
+            <span class="badge b-tool">Prisma ORM</span>
+            <span class="badge b-tool">PostgreSQL</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ 3 min vs 30 min manual onboarding</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="phase" id="ph-llc-1">
+    <div class="phase-header" onclick="togglePhase('llc-1')">
+      <span class="phase-num">PHASE 01</span>
+      <span class="phase-title">Property Intake &amp; Document Upload</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-hybrid">Hybrid</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step human">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <div class="step-name">Property Details Entry</div>
+          <div class="step-desc">Tokenizer completes structured property intake form: address, type (SFR/STR/multifamily), estimated value, monthly gross income, existing liens, entity structure preference. Platform validates each field with inline error states. Progress tracker shows completeness %.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Input</span>
+            <span class="badge b-tool">React form UI</span>
+            <span class="badge b-tool">Zod validation</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Human Required</span>
+        </div>
+      </div>
+      <div class="step hybrid">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <div class="step-name">Document Upload &amp; R2 Storage</div>
+          <div class="step-desc">Tokenizer uploads required documents: deed, rent roll (last 12 months), income/expense statement, entity documents, existing appraisal (if available). Each file is uploaded to Cloudflare R2 via signed URL. BullMQ queues each doc for AI extraction immediately on upload.</div>
+          <div class="step-tags">
+            <span class="badge b-hybrid">Hybrid</span>
+            <span class="badge b-tool">Cloudflare R2</span>
+            <span class="badge b-tool">BullMQ job queue</span>
+            <span class="badge b-tool">Redis</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Instant processing queue</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">06</div>
+        <div class="step-body">
+          <div class="step-name">AI Document Extraction (Claude API)</div>
+          <div class="step-desc">BullMQ worker pulls each document from R2 and sends to Claude API with a structured extraction prompt. Claude extracts 40+ fields per document: property address, legal description, APN, purchase price, lien amounts, gross income, NOI, occupancy %, entity name/type, ownership %. Extracted fields stored as structured JSON in PostgreSQL.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Claude API (document extraction prompt)</span>
+            <span class="badge b-tool">BullMQ worker</span>
+            <span class="badge b-tool">Prisma / PostgreSQL</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ 40 fields in &lt;30 sec</span>
+          <span class="cost-pill">⟳ vs $500–$2K paralegal work</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">07</div>
+        <div class="step-body">
+          <div class="step-name">Field Cross-Reference &amp; Discrepancy Detection</div>
+          <div class="step-desc">System automatically compares extracted fields against tokenizer's stated values from the intake form. Any mismatch exceeding threshold (e.g., stated income $5K/mo vs extracted $3.2K/mo) is flagged as a risk item. Risk flags stored with severity levels (INFO / WARNING / BLOCKER). Tokenizer UI shows red/amber indicators on mismatched fields.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Discrepancy engine (custom logic)</span>
+            <span class="badge b-tool">Claude API (semantic comparison)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Catches errors before review</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase" id="ph-llc-2">
+    <div class="phase-header" onclick="togglePhase('llc-2')">
+      <span class="phase-num">PHASE 02</span>
+      <span class="phase-title">Parco Intelligence — AI Analysis &amp; Deal Score</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-auto">Fully Automated</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step auto">
+        <div class="step-num">08</div>
+        <div class="step-body">
+          <div class="step-name">Independent AVM Valuation</div>
+          <div class="step-desc">Claude API runs an automated market valuation using extracted property data + comparable sales data from integrated market feeds. Computes estimated market value and delta from tokenizer's stated value. Delta feeds directly into Deal Score confidence. 5% gap = noted; 15%+ gap = BLOCKER flag requiring human review before approval.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Claude API (valuation prompt)</span>
+            <span class="badge b-tool">Market data feeds</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Replaces $500–$2K appraisal review</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">09</div>
+        <div class="step-body">
+          <div class="step-name">Pathway Confidence Scoring (Final)</div>
+          <div class="step-desc">Claude API runs the full pathway eligibility model with all extracted and verified data. Outputs final 0–100 confidence scores for Series LLC, Reg D 506(c), Reg D 506(b), and Reg A+. Primary pathway recommended with specific blockers listed for each alternative. Series LLC typically scores 85–95 for target properties.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Claude API (pathway eligibility model)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ 97% match rate vs counsel decision</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">10</div>
+        <div class="step-body">
+          <div class="step-name">Risk Flag Aggregation &amp; Prioritization</div>
+          <div class="step-desc">All risk flags from extraction, cross-reference, and valuation steps are aggregated and prioritized. Claude API categorizes each flag: BLOCKER (must resolve before approval), WARNING (requires reviewer acknowledgment), INFO (noted for record). Generates a ranked list with recommended resolution for each blocker.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Claude API (risk classification)</span>
+            <span class="badge b-tool">PostgreSQL (flag store)</span>
+          </div>
+        </div>
+        <div class="step-right"></div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">11</div>
+        <div class="step-body">
+          <div class="step-name">Deal Score Report Generated</div>
+          <div class="step-desc">System compiles the one-page Deal Score: pathway confidence bars, document completeness %, risk flag summary, valuation delta, recommended pathway with rationale, and specific blockers. Report generated as structured JSON and rendered in the Admin Review UI. This is what the human reviewer sees — not raw documents.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Claude API (report generation)</span>
+            <span class="badge b-tool">React (Deal Score UI)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="cost-pill">⟳ Replaces $10K–$20K legal review prep</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">12</div>
+        <div class="step-body">
+          <div class="step-name">Offering Packet First Draft</div>
+          <div class="step-desc">Claude API generates a draft Offering Packet: property summary, financial overview, token structure summary, key terms, risk disclosures template, and investor FAQ. Draft stored in R2. Marked as DRAFT — not shared with investors until admin approves final version after human review.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated (draft only)</span>
+            <span class="badge b-tool">Claude API (offering packet prompt)</span>
+            <span class="badge b-tool">Cloudflare R2</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Draft in minutes, not days</span>
+          <span class="cost-pill">⟳ vs $5K–$10K drafting cost</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase" id="ph-llc-3">
+    <div class="phase-header" onclick="togglePhase('llc-3')">
+      <span class="phase-num">PHASE 03</span>
+      <span class="phase-title">Human Review &amp; Admin Approval</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-human">Human Gate</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step human">
+        <div class="step-num">13</div>
+        <div class="step-body">
+          <div class="step-name">Parco Compliance Team — Deal Score Review</div>
+          <div class="step-desc">Compliance reviewer opens the Deal Score in Admin UI. They are reviewing a structured one-page summary — not raw documents. They see: pathway recommendation, confidence scores, all risk flags with severity, document checklist, valuation delta, and AI-suggested resolutions. Time to review: typically 30–90 minutes vs. 4–8 hours for raw document review.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required</span>
+            <span class="badge b-tool">Admin Review UI (React)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Human Gate</span>
+          <span class="save-pill">↗ 80% faster than raw doc review</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">14</div>
+        <div class="step-body">
+          <div class="step-name">Risk Flag Adjudication</div>
+          <div class="step-desc">Reviewer adjudicates each flag: RESOLVE (explain), ACCEPT (acknowledge risk), or ESCALATE (request additional info from tokenizer). BLOCKER flags must be resolved or escalated before approval can proceed. System tracks reviewer decisions with timestamps for audit trail.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required</span>
+            <span class="badge b-tool">Admin UI — flag adjudication panel</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Human Gate</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">15</div>
+        <div class="step-body">
+          <div class="step-name">Operating Agreement Draft (AI) + Human Review</div>
+          <div class="step-desc">Claude API generates a Wyoming Series LLC operating agreement draft using the approved token structure, property details, and offering parameters. Document uses Parco's pre-approved template clauses. Reviewer reads, redlines if needed, and approves. Outside counsel review recommended but not always required for Series LLC at this stage.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (operating agreement template)</span>
+            <span class="badge b-tool">Cloudflare R2</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Human Review</span>
+          <span class="cost-pill">⟳ vs $3K–$8K attorney drafting</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">16</div>
+        <div class="step-body">
+          <div class="step-name">Offering Parameters Set &amp; Admin Approval</div>
+          <div class="step-desc">Admin sets final offering parameters: token price ($50–$500), total raise target, distribution cadence (daily/monthly), minimum investment, offering duration. Clicks "APPROVE" — this triggers automatic creation of a Property record in PostgreSQL, links the submission via propertyId, and advances submission status to APPROVED. This is the core "unlock" that moves the submission from pre-tokenize to live.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required</span>
+            <span class="badge b-tool">Admin issuance pipeline UI</span>
+            <span class="badge b-tool">Prisma ORM (Property record creation)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ KEY APPROVAL GATE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase" id="ph-llc-4">
+    <div class="phase-header" onclick="togglePhase('llc-4')">
+      <span class="phase-num">PHASE 04</span>
+      <span class="phase-title">Tokenizer Signoff</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-human">Human Gate</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step human">
+        <div class="step-num">17</div>
+        <div class="step-body">
+          <div class="step-name">Tokenizer Reviews Approved Terms</div>
+          <div class="step-desc">Tokenizer receives notification that their submission has been approved. They are shown the finalized offering terms dashboard: token price, raise target, distribution cadence, operating agreement, and offering packet. Pre-tokenize dashboard switches automatically to "SIGNOFF PENDING" state based on submission lifecycle — not a manual toggle.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Review</span>
+            <span class="badge b-tool">Tokenizer pre-tokenize dashboard</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Human Gate</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">18</div>
+        <div class="step-body">
+          <div class="step-name">Tokenizer Digital Signoff</div>
+          <div class="step-desc">Tokenizer clicks "Accept Terms &amp; Authorize Token Creation." This records a timestamped signoff event on the submission. Operating agreement is countersigned. Signoff is logged with IP address, timestamp, and user ID for audit trail. Status advances to SIGNOFF_COMPLETE. BullMQ job queued for token deployment.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required</span>
+            <span class="badge b-tool">Digital signoff (Clerk-verified session)</span>
+            <span class="badge b-tool">BullMQ (deployment job queued)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Legal Signoff Gate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase" id="ph-llc-5">
+    <div class="phase-header" onclick="togglePhase('llc-5')">
+      <span class="phase-num">PHASE 05</span>
+      <span class="phase-title">Automated Token Deployment on Polygon</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-auto">Fully Automated</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step auto">
+        <div class="step-num">19</div>
+        <div class="step-body">
+          <div class="step-name">ERC-3643 Token Contract Deployment</div>
+          <div class="step-desc">BullMQ deployment worker triggers Hardhat script. ERC-3643 token contract deployed to Polygon PoS with: token name, symbol, total supply, issuer address. Series LLC compliance module configured: KYC_PASS + OFAC_CLEAR claims required, no lockup period, peer-to-peer transfers allowed between verified wallets. All in under 10 minutes.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Hardhat</span>
+            <span class="badge b-tool">Polygon PoS</span>
+            <span class="badge b-tool">ERC-3643 / T-REX protocol</span>
+            <span class="badge b-tool">Ethers.js</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ &lt;10 min vs weeks of setup</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">20</div>
+        <div class="step-body">
+          <div class="step-name">Identity Registry + KYC Allowlist Initialized</div>
+          <div class="step-desc">Identity Registry contract deployed and linked to the token. Sumsub KYC provider integration initializes: wallet addresses of KYC-verified investors are automatically added to the allowlist on-chain as they complete verification. Transfer attempts from non-verified wallets are rejected at the contract level — not by Parco's backend.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Sumsub KYC</span>
+            <span class="badge b-tool">ONCHAINID registry</span>
+            <span class="badge b-tool">Polygon PoS</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ On-chain enforcement, no backend needed</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">21</div>
+        <div class="step-body">
+          <div class="step-name">Distribution + Governance Contracts Deployed</div>
+          <div class="step-desc">Distribution contract deployed: calculates proportional payouts against token balances, receives from property income wallet, executes on distribution run approval. Governance snapshot contract deployed: one token = one vote, proposals and ballots recorded on-chain. Both contracts linked to the main ERC-3643 token contract.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Hardhat (distribution contract)</span>
+            <span class="badge b-tool">Snapshot.js (governance)</span>
+            <span class="badge b-tool">Polygon PoS</span>
+          </div>
+        </div>
+        <div class="step-right"></div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">22</div>
+        <div class="step-body">
+          <div class="step-name">Marketplace Listing Created &amp; Published</div>
+          <div class="step-desc">Property record is activated in the marketplace database. Listing includes: property photos, financial summary, token price, yield target, raise progress bar, and offering packet link. Property status set to LIVE. Marketplace page goes live. Admin receives confirmation notification with contract addresses and listing URL.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Prisma / PostgreSQL</span>
+            <span class="badge b-tool">React marketplace UI</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Live in &lt;10 min from signoff</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="phase" id="ph-llc-6">
+    <div class="phase-header" onclick="togglePhase('llc-6')">
+      <span class="phase-num">PHASE 06</span>
+      <span class="phase-title">Investor Onboarding &amp; Token Sales</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-auto">Fully Automated</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step auto">
+        <div class="step-num">23</div>
+        <div class="step-body">
+          <div class="step-name">Investor KYC / AML Verification</div>
+          <div class="step-desc">Investor submits identity documents via Sumsub SDK (embedded in Parco app). Sumsub runs: ID document verification, liveness check, OFAC sanctions screening, watchlist screening. On pass: ONCHAINID claims (KYC_PASS + OFAC_CLEAR) written on-chain. Investor wallet is registered to the property's Identity Registry. Series LLC requires no accreditation check.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Sumsub SDK</span>
+            <span class="badge b-tool">ONCHAINID claims</span>
+            <span class="badge b-tool">Polygon PoS (registry write)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ 5–15 min KYC vs days manual</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">24</div>
+        <div class="step-body">
+          <div class="step-name">Token Purchase (Fiat or Crypto)</div>
+          <div class="step-desc">Investor selects token quantity and pays via Stripe (credit card / ACH) or Coinbase Commerce (USDC/ETH). On payment confirmation: tokens are transferred from issuer wallet to investor's verified wallet via the ERC-3643 contract. Transfer is rejected on-chain if investor wallet is not in the allowlist. Cap table updated in real-time.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Stripe (fiat)</span>
+            <span class="badge b-tool">Coinbase Commerce (crypto)</span>
+            <span class="badge b-tool">ERC-3643 transfer (Ethers.js)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Instant vs T+2 settlement</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 7 -->
+  <div class="phase" id="ph-llc-7">
+    <div class="phase-header" onclick="togglePhase('llc-7')">
+      <span class="phase-num">PHASE 07</span>
+      <span class="phase-title">Ongoing Servicing OS — Monthly Cadence</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-ai">AI-Assisted + Human Approval</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step auto">
+        <div class="step-num">25</div>
+        <div class="step-body">
+          <div class="step-name">Financial Data Ingestion</div>
+          <div class="step-desc">BullMQ monthly close job runs on property cadence. Pulls income/expense data from connected property management system (or tokenizer uploads financials). Calculates gross income, operating expenses, NOI, and distributable amount for the period. Stores structured financial snapshot in PostgreSQL.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">BullMQ worker</span>
+            <span class="badge b-tool">PostgreSQL (KPI snapshot)</span>
+          </div>
+        </div>
+        <div class="step-right"></div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">26</div>
+        <div class="step-body">
+          <div class="step-name">Monthly Report Draft (Claude API)</div>
+          <div class="step-desc">Claude API generates a complete monthly property update from the financial snapshot: occupancy highlights, income summary, expense notes, any maintenance or capital events, and distribution preview. Draft matches Parco's investor communication style and is ready for tokenizer review. Typical draft time: under 60 seconds.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (monthly report prompt)</span>
+            <span class="badge b-tool">Financial snapshot data</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ 60 sec draft vs 2–4 hr manual</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">27</div>
+        <div class="step-body">
+          <div class="step-name">Tokenizer Reviews &amp; Approves Report</div>
+          <div class="step-desc">Tokenizer receives notification. Logs into Servicing dashboard to review the draft report. Can edit directly or approve as-is. On approval, report is published to the Investor Reporting Center. All investors with holdings in the property receive a notification. Report is immutably timestamped.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required</span>
+            <span class="badge b-tool">Tokenizer servicing dashboard</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Approval Gate</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">28</div>
+        <div class="step-body">
+          <div class="step-name">Distribution Run Calculated</div>
+          <div class="step-desc">Distribution contract reads current on-chain token balances (always accurate, never a stale spreadsheet). Calculates each holder's proportional share of the distributable amount. Distribution run record created in PostgreSQL with per-wallet allocation table. Admin receives distribution run for review.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Distribution contract (on-chain)</span>
+            <span class="badge b-tool">Prisma / PostgreSQL</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ On-chain cap table = always accurate</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">29</div>
+        <div class="step-body">
+          <div class="step-name">Admin Approves Distribution Run</div>
+          <div class="step-desc">Admin reviews the distribution run: total amount, per-wallet allocations, and confirms distributable balance is funded. Clicks APPROVE. This triggers the payment execution step. Admin can flag any individual wallet for investigation before payment without blocking other distributions.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required</span>
+            <span class="badge b-tool">Admin servicing UI — distribution panel</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Financial Approval Gate</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">30</div>
+        <div class="step-body">
+          <div class="step-name">Distribution Payments Executed</div>
+          <div class="step-desc">Stripe processes ACH distributions for fiat wallet holders. Coinbase Commerce processes USDC distributions for crypto wallet holders. Each payment recorded against the distribution run. Investors receive payment notifications. Distribution history maintained in investor portfolio dashboard permanently.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Stripe (ACH payouts)</span>
+            <span class="badge b-tool">Coinbase Commerce (USDC)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Automated vs manual wire per holder</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">31</div>
+        <div class="step-body">
+          <div class="step-name">Ongoing Compliance &amp; KYC Monitoring</div>
+          <div class="step-desc">Automated background jobs run continuously: OFAC watchlist re-screening on schedule, KYC expiration date monitoring (ONCHAINID claims auto-expire, blocking transfers until re-verified), compliance obligation tracking in the Compliance Pack dashboard, governance deadline reminders. All logged for audit trail.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">BullMQ (cron jobs)</span>
+            <span class="badge b-tool">Sumsub (re-screening)</span>
+            <span class="badge b-tool">ONCHAINID claim expiry</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Replaces compliance FTE monitoring</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="savings-bar">
+    <div>
+      <div class="savings-title">Time &amp; Cost Comparison — Series LLC</div>
+      <div class="savings-row"><span class="savings-label">Time to live token</span><span class="savings-parco">2–6 weeks</span><span class="savings-trad">3–6 months traditional</span></div>
+      <div class="savings-row"><span class="savings-label">Legal/issuance cost</span><span class="savings-parco">1.5–3% of raise</span><span class="savings-trad">$20K–$50K flat</span></div>
+      <div class="savings-row"><span class="savings-label">Monthly reporting</span><span class="savings-parco">60 sec AI draft + review</span><span class="savings-trad">4–8 hrs manual</span></div>
+      <div class="savings-row"><span class="savings-label">Document extraction</span><span class="savings-parco">30 sec, 40 fields</span><span class="savings-trad">$500–$2K paralegal</span></div>
+      <div class="savings-row"><span class="savings-label">KYC processing</span><span class="savings-parco">5–15 min (Sumsub)</span><span class="savings-trad">1–3 days manual</span></div>
+      <div class="savings-row"><span class="savings-label">Investor onboarding</span><span class="savings-parco">Fully automated</span><span class="savings-trad">$500–$2K per investor</span></div>
+    </div>
+    <div>
+      <div class="savings-title">Automation Breakdown — 31 Steps Total</div>
+      <div class="automation-ring">
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#1a2e28" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#0dba9c" stroke-width="8" stroke-dasharray="128 73" stroke-linecap="round"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="8" stroke-dasharray="46 155" stroke-dashoffset="-128" stroke-linecap="round"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#e05c5c" stroke-width="8" stroke-dasharray="27 174" stroke-dashoffset="-174" stroke-linecap="round"/>
+          </svg>
+          <div class="ring-label">
+            <div class="ring-pct">64%</div>
+            <div class="ring-sub">automated</div>
+          </div>
+        </div>
+        <div class="ring-legend">
+          <div class="rl-row"><div class="rl-dot" style="background:var(--auto)"></div>Fully automated — 20 steps (64%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--ai)"></div>AI-assisted — 6 steps (19%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--human)"></div>Human gates — 5 steps (16%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--hybrid)"></div>Hybrid — 2 steps (6%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     PATHWAY 02: REG D 506(b)
+════════════════════════════════════════ -->
+<div class="pathway" id="pw-regd">
+
+  <div class="pathway-meta">
+    <div class="meta-card">
+      <div class="meta-label">Pathway</div>
+      <div class="meta-val sm green">Regulation D 506(b)</div>
+      <div class="meta-sub">Phase 2</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Time to Live</div>
+      <div class="meta-val green">4–12 wks</div>
+      <div class="meta-sub">vs. 4–8 months traditional</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Cost Reduction</div>
+      <div class="meta-val green">40–70%</div>
+      <div class="meta-sub">vs. traditional Reg D</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Investor Type</div>
+      <div class="meta-val sm">Accredited Only</div>
+      <div class="meta-sub">+ up to 35 sophisticated non-acc</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Raise Cap</div>
+      <div class="meta-val green">Unlimited</div>
+      <div class="meta-sub">No SEC maximum</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Key Constraint</div>
+      <div class="meta-val sm" style="color:var(--human)">No Gen. Solicitation</div>
+      <div class="meta-sub">Pre-existing relationships only</div>
+    </div>
+  </div>
+
+  <!-- Note on shared phases -->
+  <div style="background:rgba(13,186,156,.06);border:1px solid rgba(13,186,156,.15);border-radius:8px;padding:14px 20px;margin-bottom:24px;font-size:12px;color:var(--muted);">
+    <strong style="color:var(--glit)">Phases 00–02 are identical to Series LLC</strong> — Lead capture, property intake, document extraction, cross-reference, AVM valuation, pathway scoring, risk flags, and Deal Score generation all run the same AI workflow. Reg D 506(b) diverges beginning at Phase 03 where additional legal structuring, PPM drafting, and outside counsel review are required before token deployment.
+  </div>
+
+  <!-- Phase 3 - Legal Structuring (Reg D specific) -->
+  <div class="phase" id="ph-regd-3">
+    <div class="phase-header" onclick="togglePhase('regd-3')">
+      <span class="phase-num">PHASE 03</span>
+      <span class="phase-title">Legal Structuring — PPM &amp; Entity Formation</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-human">Human-Heavy</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step human">
+        <div class="step-num">13</div>
+        <div class="step-body">
+          <div class="step-name">Outside Securities Counsel Engagement</div>
+          <div class="step-desc">Parco operations team engages outside securities counsel (required for Reg D). Counsel receives the AI-generated Deal Score summary as briefing material. They do not start from zero — the Deal Score gives them pathway recommendation, risk flags, and property overview pre-analyzed. Counsel reviews pathway determination and confirms Reg D 506(b) suitability.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required</span>
+            <span class="badge b-tool">Deal Score as counsel briefing doc</span>
+            <span class="badge b-tool">Outside securities counsel</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Legal Gate</span>
+          <span class="save-pill">↗ Deal Score cuts counsel prep by 60%</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">14</div>
+        <div class="step-body">
+          <div class="step-name">Delaware LLC / LP Entity Formation</div>
+          <div class="step-desc">Outside counsel forms the Delaware LLC or LP for the offering. Each property gets its own SPV. Articles of organization filed. EIN obtained. Registered agent engaged. Parco platform links the entity to the submission record once formation documents are uploaded to R2. Entity formation is a legal function — AI cannot perform or verify this step.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required (counsel)</span>
+            <span class="badge b-tool">State of Delaware filing</span>
+            <span class="badge b-tool">Cloudflare R2 (doc storage)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Human Gate</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">15</div>
+        <div class="step-body">
+          <div class="step-name">PPM First Draft (Claude API) → Counsel Finalize</div>
+          <div class="step-desc">Claude API generates a comprehensive PPM first draft using: extracted property data, Deal Score risk flags as disclosure items, offering parameters, entity structure, and Parco's pre-approved PPM clause library. Claude drafts: executive summary, offering terms, risk factors (populated from flagged items), property description, management section, financial statements section, and subscription procedures. Output is a ~40-page structured draft. Outside counsel finalizes, edits, and takes legal responsibility for the final document.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (PPM drafting prompt)</span>
+            <span class="badge b-tool">Parco PPM clause library (R2)</span>
+            <span class="badge b-tool">Outside counsel (finalization)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Counsel Required</span>
+          <span class="cost-pill">⟳ Draft in 2 hrs vs $8K–$15K</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">16</div>
+        <div class="step-body">
+          <div class="step-name">Subscription Agreement Template</div>
+          <div class="step-desc">Claude API generates a subscription agreement template using the finalized offering terms, accreditation representation language, and investor questionnaire. Template includes accreditation certifications (income, net worth, professional certification paths). Counsel reviews. Template stored in R2 and linked to the offering. Investors e-sign at subscription time via DocuSign/platform signature.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (subscription agreement)</span>
+            <span class="badge b-tool">Counsel review</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="cost-pill">⟳ vs $2K–$5K attorney drafting</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">17</div>
+        <div class="step-body">
+          <div class="step-name">Form D Preparation (SEC Filing)</div>
+          <div class="step-desc">Claude API pre-fills Form D using offering parameters: issuer name, EIN, state of incorporation, offering date, amount sold, number of investors, exemption claimed (506(b)), and sales compensation. Generates complete draft. Counsel reviews and finalizes. Must be filed with SEC EDGAR within 15 days of first sale. Parco tracks the filing deadline automatically from the first investor subscription date.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (Form D population)</span>
+            <span class="badge b-tool">SEC EDGAR (filed by counsel)</span>
+            <span class="badge b-tool">BullMQ (15-day deadline alert)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Auto deadline tracking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 - Review -->
+  <div class="phase" id="ph-regd-4">
+    <div class="phase-header" onclick="togglePhase('regd-4')">
+      <span class="phase-num">PHASE 04</span>
+      <span class="phase-title">Dual Review — Parco Compliance + Outside Counsel</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-human">Human Gates</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step human">
+        <div class="step-num">18</div>
+        <div class="step-body">
+          <div class="step-name">Outside Counsel Final Package Review</div>
+          <div class="step-desc">Securities counsel reviews: entity documents, PPM, subscription agreement, offering terms, and Form D draft as a complete package. Confirms Reg D 506(b) compliance, issues legal opinion (or comfort letter). Any changes feed back into the Claude API pipeline for revision. Counsel sign-off is documented and attached to the issuance case in the admin system.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required (counsel)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Legal Approval Gate</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">19</div>
+        <div class="step-body">
+          <div class="step-name">Parco Compliance Team Approval + Tokenizer Signoff</div>
+          <div class="step-desc">Parco compliance team confirms all materials are in order: Deal Score flags resolved, PPM and entity docs uploaded, counsel sign-off received. Admin sets offering parameters in the issuance pipeline. Tokenizer reviews and signs off on the final package. Property record created and linked. Submission advances to APPROVED. Deployment job queued.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required</span>
+            <span class="badge b-tool">Admin issuance pipeline UI</span>
+            <span class="badge b-tool">Prisma ORM</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ KEY APPROVAL GATE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 - Restricted Token Deployment -->
+  <div class="phase" id="ph-regd-5">
+    <div class="phase-header" onclick="togglePhase('regd-5')">
+      <span class="phase-num">PHASE 05</span>
+      <span class="phase-title">Restricted Token Deployment — Reg D Compliance Module</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-auto">Automated</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step auto">
+        <div class="step-num">20</div>
+        <div class="step-body">
+          <div class="step-name">ERC-3643 + Reg D Compliance Module Deployment</div>
+          <div class="step-desc">Token contract deployed with Reg D-specific compliance module: ACCREDITED_INVESTOR claim required (in addition to KYC_PASS + OFAC_CLEAR), 12-month lockup period enforced at the contract level (not application layer), transfers post-lockup restricted to accredited wallets only. Contract encodes the first-sale date for lockup calculation. All enforced on-chain without backend reliance.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Hardhat</span>
+            <span class="badge b-tool">ERC-3643 (Reg D compliance module)</span>
+            <span class="badge b-tool">Polygon PoS / ETH mainnet</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Lockup enforced by code, not paperwork</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">21</div>
+        <div class="step-body">
+          <div class="step-name">Form D Filed Within 15-Day Window</div>
+          <div class="step-desc">BullMQ cron job triggers on first investor subscription. 15-day countdown clock starts. Parco compliance team is notified. Pre-filled Form D (from Phase 03 step 17) is submitted to SEC EDGAR by counsel or issuer. System tracks filing status. If not filed, escalation alert fires on day 14. Filing confirmation stored in R2 and linked to the issuance case.</div>
+          <div class="step-tags">
+            <span class="badge b-hybrid">Hybrid</span>
+            <span class="badge b-tool">BullMQ (deadline tracking)</span>
+            <span class="badge b-tool">SEC EDGAR (filed by issuer/counsel)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Auto-tracked, never missed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 - Accredited Investor Onboarding -->
+  <div class="phase" id="ph-regd-6">
+    <div class="phase-header" onclick="togglePhase('regd-6')">
+      <span class="phase-num">PHASE 06</span>
+      <span class="phase-title">Accredited Investor Onboarding — No General Solicitation</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-hybrid">Hybrid</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step human">
+        <div class="step-num">22</div>
+        <div class="step-body">
+          <div class="step-name">Pre-Existing Relationship Gate (506(b) Critical)</div>
+          <div class="step-desc">506(b) prohibits general solicitation — only investors with whom the issuer had a substantive pre-existing relationship may participate. This cannot be automated. Parco's compliance team or the tokenizer must document the pre-existing relationship for each investor before they are admitted to the offering. Relationship documentation stored against the investor record. AI flags any investor without documented relationship before allowing subscription.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required (506(b) legal requirement)</span>
+            <span class="badge b-tool">Claude API (relationship documentation check)</span>
+            <span class="badge b-tool">Investor relationship record (PostgreSQL)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Legal Requirement</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">23</div>
+        <div class="step-body">
+          <div class="step-name">Full KYC + Accreditation Verification</div>
+          <div class="step-desc">Investor completes enhanced onboarding: Sumsub KYC (identity + OFAC), then accreditation verification via Parallel Markets or VerifyInvestor (income documentation, net worth attestation, or professional certification). On pass: ONCHAINID claims written: KYC_PASS + OFAC_CLEAR + ACCREDITED_INVESTOR. Wallet added to accredited allowlist. Claims carry expiration dates and are monitored for renewal.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Sumsub (KYC/AML)</span>
+            <span class="badge b-tool">Parallel Markets / VerifyInvestor</span>
+            <span class="badge b-tool">ONCHAINID (ACCREDITED_INVESTOR claim)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Automated vs manual accred. review</span>
+        </div>
+      </div>
+      <div class="step hybrid">
+        <div class="step-num">24</div>
+        <div class="step-body">
+          <div class="step-name">Subscription Agreement Execution + Token Purchase</div>
+          <div class="step-desc">Investor reviews and e-signs the subscription agreement. Signs accreditation representations. Makes investment via Stripe or Coinbase Commerce. On payment confirmation: ERC-3643 transfer executes. Tokens are locked for 12-month period on-chain. Investor dashboard shows locked status with unlock date displayed. Transfer attempts blocked by compliance module until lockup expires.</div>
+          <div class="step-tags">
+            <span class="badge b-hybrid">Hybrid</span>
+            <span class="badge b-tool">E-signature (platform or DocuSign)</span>
+            <span class="badge b-tool">Stripe / Coinbase Commerce</span>
+            <span class="badge b-tool">ERC-3643 (lockup module)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Investor Signature Required</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 7 - Ongoing Servicing Reg D -->
+  <div class="phase" id="ph-regd-7">
+    <div class="phase-header" onclick="togglePhase('regd-7')">
+      <span class="phase-num">PHASE 07</span>
+      <span class="phase-title">Ongoing Servicing — Quarterly Reporting + K-1 Support</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-ai">AI-Assisted</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step ai">
+        <div class="step-num">25</div>
+        <div class="step-body">
+          <div class="step-name">Quarterly Investor Report Draft</div>
+          <div class="step-desc">Reg D investors expect more detailed reporting than Series LLC. Claude API generates quarterly report: financial performance vs. projections, capital expenditure updates, market comparable analysis, distribution history, governance activity, and forward outlook. Report generated from structured financial data in PostgreSQL. Tokenizer and counsel review before publishing.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (quarterly report prompt)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Draft in minutes, not days</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">26</div>
+        <div class="step-body">
+          <div class="step-name">K-1 Preparation Scaffolding</div>
+          <div class="step-desc">Claude API generates K-1 data scaffolding from distribution history, entity structure, and investor allocation data. Produces per-investor allocation summary with income/expense components, distributable share, and beginning/ending capital account. CPA firm uses this output for actual K-1 preparation. Reduces CPA time by ~40–60% vs. starting from raw records.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (K-1 scaffolding)</span>
+            <span class="badge b-tool">Distribution history (PostgreSQL)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="cost-pill">⟳ Reduces CPA cost 40–60%</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">27</div>
+        <div class="step-body">
+          <div class="step-name">Lockup Period + Accreditation Expiry Monitoring</div>
+          <div class="step-desc">BullMQ cron jobs continuously monitor: 12-month lockup countdowns per investor wallet (tracked from first purchase), ONCHAINID ACCREDITED_INVESTOR claim expiration (typically annual re-verification required), and distribution schedule. Automated alerts fire 30/14/7 days before lockup expiry for secondary trading eligibility notifications. Lapsed accreditation claims automatically suspend transfer eligibility on-chain.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">BullMQ (cron monitoring)</span>
+            <span class="badge b-tool">ONCHAINID (claim expiry)</span>
+            <span class="badge b-tool">ERC-3643 (transfer control)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Compliance enforced automatically</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="savings-bar">
+    <div>
+      <div class="savings-title">Time &amp; Cost Comparison — Reg D 506(b)</div>
+      <div class="savings-row"><span class="savings-label">Time to live token</span><span class="savings-parco">4–12 weeks</span><span class="savings-trad">4–8 months traditional</span></div>
+      <div class="savings-row"><span class="savings-label">Per-deal legal cost</span><span class="savings-parco">~$8K–$15K (counsel review)</span><span class="savings-trad">$25K–$50K traditional</span></div>
+      <div class="savings-row"><span class="savings-label">PPM drafting</span><span class="savings-parco">AI draft 2–4 hrs + counsel edit</span><span class="savings-trad">$8K–$15K attorney time</span></div>
+      <div class="savings-row"><span class="savings-label">Form D tracking</span><span class="savings-parco">Auto 15-day countdown</span><span class="savings-trad">Manual calendar + risk of miss</span></div>
+      <div class="savings-row"><span class="savings-label">Accred. verification</span><span class="savings-parco">Automated (Parallel Markets)</span><span class="savings-trad">Manual doc review per investor</span></div>
+      <div class="savings-row"><span class="savings-label">Lockup enforcement</span><span class="savings-parco">On-chain, zero oversight</span><span class="savings-trad">Manual transfer agent + legal</span></div>
+    </div>
+    <div>
+      <div class="savings-title">Automation Breakdown — ~27 Steps Total</div>
+      <div class="automation-ring">
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#1a2e28" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#0dba9c" stroke-width="8" stroke-dasharray="110 91" stroke-linecap="round"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="8" stroke-dasharray="54 147" stroke-dashoffset="-110" stroke-linecap="round"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#e05c5c" stroke-width="8" stroke-dasharray="37 164" stroke-dashoffset="-164" stroke-linecap="round"/>
+          </svg>
+          <div class="ring-label">
+            <div class="ring-pct">54%</div>
+            <div class="ring-sub">automated</div>
+          </div>
+        </div>
+        <div class="ring-legend">
+          <div class="rl-row"><div class="rl-dot" style="background:var(--auto)"></div>Fully automated — 15 steps (54%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--ai)"></div>AI-assisted — 8 steps (28%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--human)"></div>Human gates — 7 steps (25%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--hybrid)"></div>Hybrid — 2 steps (7%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     PATHWAY 03: REG A+
+════════════════════════════════════════ -->
+<div class="pathway" id="pw-rega">
+
+  <div class="pathway-meta">
+    <div class="meta-card">
+      <div class="meta-label">Pathway</div>
+      <div class="meta-val sm green">Regulation A+ Tier 2</div>
+      <div class="meta-sub">Phase 3 — Future</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Time to Live</div>
+      <div class="meta-val" style="color:var(--ai)">4–8 mos</div>
+      <div class="meta-sub">SEC qualification required</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Raise Cap</div>
+      <div class="meta-val green">$75M/yr</div>
+      <div class="meta-sub">Tier 2 maximum</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Investor Type</div>
+      <div class="meta-val sm green">General Public</div>
+      <div class="meta-sub">No accreditation required</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Secondary Trading</div>
+      <div class="meta-val sm green">Day 1 Freely Tradable</div>
+      <div class="meta-sub">No lockup period</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Compliance Burden</div>
+      <div class="meta-val sm" style="color:var(--human)">SEC Form 1-SA + 1-K</div>
+      <div class="meta-sub">Semi-annual + annual filings</div>
+    </div>
+  </div>
+
+  <div style="background:rgba(13,186,156,.06);border:1px solid rgba(13,186,156,.15);border-radius:8px;padding:14px 20px;margin-bottom:24px;font-size:12px;color:var(--muted);">
+    <strong style="color:var(--glit)">Phases 00–02 are identical to Series LLC</strong> — The same AI intake, document extraction, cross-reference, AVM, and Deal Score pipeline runs first. Reg A+ adds extensive legal structuring, an SEC qualification process (3–6 months), and ongoing SEC reporting obligations that make the Parco Servicing OS critical infrastructure for this pathway.
+  </div>
+
+  <!-- Phase 3 - Audit + Offering Circular -->
+  <div class="phase" id="ph-rega-3">
+    <div class="phase-header" onclick="togglePhase('rega-3')">
+      <span class="phase-num">PHASE 03</span>
+      <span class="phase-title">Audit Engagement + Offering Circular Drafting (Form 1-A)</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-human">Most Human-Intensive Phase</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step human">
+        <div class="step-num">13</div>
+        <div class="step-body">
+          <div class="step-name">Auditor Engagement (Two-Year Audited Financials Required)</div>
+          <div class="step-desc">Reg A+ Tier 2 requires two years of audited financial statements. Parco engages a PCAOB-registered auditing firm on behalf of the issuer. Claude API pre-organizes all financial data extracted from documents into a clean data room package to reduce auditor prep time. Auditor conducts field work, issues audit opinion. This step alone takes 6–10 weeks and costs $25K–$75K depending on asset complexity.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required (PCAOB auditor)</span>
+            <span class="badge b-tool">Claude API (financial data room prep)</span>
+            <span class="badge b-tool">Cloudflare R2 (data room)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Legal Requirement</span>
+          <span class="save-pill">↗ AI data room reduces auditor time</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">14</div>
+        <div class="step-body">
+          <div class="step-name">Offering Circular (Form 1-A) — Narrative Drafting</div>
+          <div class="step-desc">Form 1-A is the full Offering Circular — the Reg A+ equivalent of a prospectus. Claude API drafts the narrative sections: business description, property overview, use of proceeds, management discussion &amp; analysis (MD&amp;A), risk factors (expanded from Deal Score flags), tokenization mechanics description, and forward-looking statement disclaimers. Claude drafts ~60–80 pages of narrative. Securities counsel, auditors, and issuer finalize and take legal responsibility. This is the most substantial AI writing task in any Parco pathway.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (Form 1-A narrative drafting)</span>
+            <span class="badge b-tool">Securities counsel (finalization)</span>
+            <span class="badge b-tool">PCAOB auditor (financial sections)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Counsel + Auditor Required</span>
+          <span class="cost-pill">⟳ Draft vs $40K–$80K from scratch</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">15</div>
+        <div class="step-body">
+          <div class="step-name">Investment Cap Module Configuration (Non-Accredited Limits)</div>
+          <div class="step-desc">Reg A+ Tier 2 caps non-accredited investor purchases at 10% of annual income or net worth (whichever is greater). Claude API drafts the investor questionnaire that collects income/net worth attestations. System configures the ERC-3643 investment cap compliance module: before any non-accredited purchase, cap is calculated on-chain against attested figures. Accredited investors have no cap. Module auto-blocks purchases that exceed the statutory limit.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (questionnaire drafting)</span>
+            <span class="badge b-tool">ERC-3643 (investment cap module)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Cap enforced on-chain automatically</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 - SEC Qualification -->
+  <div class="phase" id="ph-rega-4">
+    <div class="phase-header" onclick="togglePhase('rega-4')">
+      <span class="phase-num">PHASE 04</span>
+      <span class="phase-title">SEC Qualification Process (3–6 Months)</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-human">External — SEC Controlled</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step human">
+        <div class="step-num">16</div>
+        <div class="step-body">
+          <div class="step-name">Form 1-A Filed with SEC EDGAR</div>
+          <div class="step-desc">Complete Form 1-A package filed electronically with SEC EDGAR: Offering Circular narrative, audited financials, exhibits (operating agreements, material contracts, property documents). Filed by securities counsel. SEC begins its review process. No sales may occur until the SEC qualifies the offering. This is the point where the timeline is largely outside Parco's control.</div>
+          <div class="step-tags">
+            <span class="badge b-human">Human Required (counsel)</span>
+            <span class="badge b-tool">SEC EDGAR (electronic filing)</span>
+            <span class="badge b-tool">Cloudflare R2 (complete document set)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Filing Gate</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">17</div>
+        <div class="step-body">
+          <div class="step-name">SEC Comment Letter Response</div>
+          <div class="step-desc">SEC reviewers issue a comment letter identifying items requiring clarification, additional disclosure, or revision. Typically 30–50 comments on a first filing. Claude API is used to draft response memoranda for each comment: categorizes comments, drafts proposed responses or disclosure amendments, identifies which changes require document edits. Counsel reviews, revises, and files the response. Multiple rounds of comments are common (2–4 rounds typical).</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (comment response drafting)</span>
+            <span class="badge b-tool">Securities counsel (filing)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Counsel Required</span>
+          <span class="save-pill">↗ Claude speeds comment response by 50%+</span>
+        </div>
+      </div>
+      <div class="step human">
+        <div class="step-num">18</div>
+        <div class="step-body">
+          <div class="step-name">SEC Qualification Order Received</div>
+          <div class="step-desc">After all comments are resolved and the SEC is satisfied, they issue a qualification order — the official authorization to sell securities under Reg A+. This is the milestone that unlocks token deployment and offering launch. Qualification order stored in R2. Parco platform automatically advances the issuance case to QUALIFIED status, triggering the deployment pipeline.</div>
+          <div class="step-tags">
+            <span class="badge b-human">External (SEC decision)</span>
+            <span class="badge b-tool">BullMQ (qualification trigger)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ SEC Gate (external)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 - Token Deployment & Launch -->
+  <div class="phase" id="ph-rega-5">
+    <div class="phase-header" onclick="togglePhase('rega-5')">
+      <span class="phase-num">PHASE 05</span>
+      <span class="phase-title">Token Deployment &amp; Public Offering Launch</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-auto">Automated</span>
+        <span class="phase-tag pt-human">+ Human Marketing</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step auto">
+        <div class="step-num">19</div>
+        <div class="step-body">
+          <div class="step-name">ERC-3643/7518 Freely Tradable Token Deployment</div>
+          <div class="step-desc">Token contract deployed with Reg A+ compliance module: freely tradable from day one (no lockup), investment cap enforcement for non-accredited investors (10% of income/NW, verified at subscription time on-chain), full KYC gating (KYC_PASS + OFAC_CLEAR required), investment cap tracking per wallet per year. Deployed to Ethereum mainnet for Reg A+ (institutional credibility requirement).</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Hardhat</span>
+            <span class="badge b-tool">ERC-3643 / ERC-7518 (Reg A+ module)</span>
+            <span class="badge b-tool">Ethereum mainnet</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Freely tradable Day 1</span>
+        </div>
+      </div>
+      <div class="step hybrid">
+        <div class="step-num">20</div>
+        <div class="step-body">
+          <div class="step-name">General Solicitation Marketing Launch</div>
+          <div class="step-desc">Unlike Reg D 506(b), Reg A+ permits broad general solicitation — advertising, social media, email campaigns. Claude API drafts marketing copy using the qualified Offering Circular as the source of truth. Marketing team reviews and executes. All marketing must reference the Offering Circular and comply with SEC advertising requirements. This is one of Reg A+'s key advantages — maximum investor reach.</div>
+          <div class="step-tags">
+            <span class="badge b-hybrid">Hybrid</span>
+            <span class="badge b-tool">Claude API (marketing copy from OC)</span>
+            <span class="badge b-tool">Marketing team (execution + compliance review)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Claude-drafted copy, human-reviewed</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">21</div>
+        <div class="step-body">
+          <div class="step-name">Public Investor Onboarding + Token Purchase</div>
+          <div class="step-desc">Any verified investor (accredited or non-accredited) can subscribe. Non-accredited investors complete income/NW questionnaire for cap calculation. Sumsub KYC runs. Investment cap checked on-chain before every purchase. Token transfer executes on payment. Real-time raise progress tracked. Non-accredited annual investment limit tracked per wallet — system blocks any purchase that would exceed the 10% cap.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">Sumsub (KYC)</span>
+            <span class="badge b-tool">ERC-3643 (investment cap enforcement)</span>
+            <span class="badge b-tool">Stripe / Coinbase Commerce</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Caps enforced on-chain, no manual review</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 - Ongoing SEC Reporting -->
+  <div class="phase" id="ph-rega-6">
+    <div class="phase-header" onclick="togglePhase('rega-6')">
+      <span class="phase-num">PHASE 06</span>
+      <span class="phase-title">Ongoing SEC Reporting — Form 1-SA (Semi-Annual) + Form 1-K (Annual)</span>
+      <div class="phase-stats">
+        <span class="phase-tag pt-ai">AI-Assisted + Human</span>
+        <span class="phase-tag pt-human">Critical for Reg A+ Eligibility</span>
+      </div>
+      <span class="phase-toggle">▾</span>
+    </div>
+    <div class="steps">
+      <div class="step auto">
+        <div class="step-num">22</div>
+        <div class="step-body">
+          <div class="step-name">Financial Data Collection (Automated)</div>
+          <div class="step-desc">BullMQ semi-annual and annual close jobs automatically pull structured financial data from the Parco Servicing OS: all distribution records, NOI per period, capital expenditure log, occupancy data, and investor cap table snapshot. This is the data foundation for both Form 1-SA and 1-K filings. The fact that Parco has been running this data structure since issuance means no scrambling at reporting time.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">BullMQ (reporting cadence jobs)</span>
+            <span class="badge b-tool">PostgreSQL (structured financial history)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Servicing OS = data always ready</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">23</div>
+        <div class="step-body">
+          <div class="step-name">Form 1-SA Draft (Semi-Annual Report)</div>
+          <div class="step-desc">Claude API generates a complete Form 1-SA draft every 6 months: MD&amp;A narrative comparing actual vs. projected performance, financial statement summaries, material event disclosures, and management certifications template. Draft is structured to match SEC form requirements exactly. Parco's legal + compliance team reviews, tokenizer confirms accuracy, securities counsel finalizes. CPA firm certifies financial statements. Filed via EDGAR within 90 days of period end.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (Form 1-SA narrative)</span>
+            <span class="badge b-tool">Financial history (PostgreSQL)</span>
+            <span class="badge b-tool">Securities counsel + CPA (finalization)</span>
+            <span class="badge b-tool">SEC EDGAR (filing)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Counsel + CPA Required</span>
+          <span class="cost-pill">⟳ AI draft cuts $8K–$15K filing cost</span>
+        </div>
+      </div>
+      <div class="step ai">
+        <div class="step-num">24</div>
+        <div class="step-body">
+          <div class="step-name">Form 1-K Draft (Annual Report + Audited Financials)</div>
+          <div class="step-desc">Claude API generates annual Form 1-K narrative: full-year financial review, business description updates, material risk factor updates, management and ownership disclosures, and executive compensation. Audited financial statements (from annual audit engagement) are attached. Claude also drafts the management representation letters and certifications. CPA firm audits and certifies. Securities counsel finalizes. Filed within 120 days of fiscal year end. Failure to file terminates Reg A+ eligibility.</div>
+          <div class="step-tags">
+            <span class="badge b-ai">AI-Assisted</span>
+            <span class="badge b-tool">Claude API (Form 1-K narrative)</span>
+            <span class="badge b-tool">PCAOB auditor (annual audit)</span>
+            <span class="badge b-tool">Securities counsel (finalization)</span>
+            <span class="badge b-tool">BullMQ (120-day deadline alert)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="human-gate">⚙ Auditor + Counsel Required</span>
+          <span class="save-pill">↗ Auto deadline tracking — never miss</span>
+        </div>
+      </div>
+      <div class="step auto">
+        <div class="step-num">25</div>
+        <div class="step-body">
+          <div class="step-name">ATS Secondary Trading Compliance</div>
+          <div class="step-desc">Reg A+ tokens are freely tradable — secondary market activity requires ATS (Alternative Trading System) integration for compliant broker-dealer facilitated trades. Parco marketplace integrates with ATS partner. On-chain transfer controls verify both buyer and seller meet KYC requirements before any transfer executes. Investment cap tracking updates on secondary purchases for non-accredited buyers. All secondary trades logged with timestamps.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-tool">ATS partner integration</span>
+            <span class="badge b-tool">ERC-3643 (secondary transfer control)</span>
+            <span class="badge b-tool">Investment cap module (non-accred. buyers)</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Compliant secondary market built-in</span>
+        </div>
+      </div>
+      <div class="auto step">
+        <div class="step-num">26</div>
+        <div class="step-body">
+          <div class="step-name">Investor Reporting Center + Distribution + Governance (Ongoing)</div>
+          <div class="step-desc">Same Parco Servicing OS that runs for Series LLC and Reg D: monthly financial reports, distributions, on-chain governance votes — but now for a much larger and more diverse investor base that includes retail non-accredited investors. Investor Reporting Center is critical for Reg A+ credibility. Parco's platform scales this without additional headcount — same automation stack handles any number of token holders.</div>
+          <div class="step-tags">
+            <span class="badge b-auto">Automated</span>
+            <span class="badge b-ai">AI-Assisted (reports)</span>
+            <span class="badge b-tool">BullMQ (distribution jobs)</span>
+            <span class="badge b-tool">Claude API (monthly/quarterly reports)</span>
+            <span class="badge b-tool">Governance snapshot contracts</span>
+          </div>
+        </div>
+        <div class="step-right">
+          <span class="save-pill">↗ Scales to any investor count</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="savings-bar">
+    <div>
+      <div class="savings-title">Time &amp; Cost Comparison — Reg A+</div>
+      <div class="savings-row"><span class="savings-label">Time to live token</span><span class="savings-parco">4–8 months total</span><span class="savings-trad">6–12 months traditional</span></div>
+      <div class="savings-row"><span class="savings-label">Offering Circular (Form 1-A)</span><span class="savings-parco">AI draft + counsel edit</span><span class="savings-trad">$50K–$120K from scratch</span></div>
+      <div class="savings-row"><span class="savings-label">SEC comment responses</span><span class="savings-parco">Claude drafts, counsel reviews</span><span class="savings-trad">$500–$2K per comment round</span></div>
+      <div class="savings-row"><span class="savings-label">Semi-annual 1-SA filing</span><span class="savings-parco">AI draft + counsel finalize</span><span class="savings-trad">$8K–$20K per filing</span></div>
+      <div class="savings-row"><span class="savings-label">Annual 1-K filing</span><span class="savings-parco">AI draft + audit + counsel</span><span class="savings-trad">$25K–$50K per year</span></div>
+      <div class="savings-row"><span class="savings-label">Investment cap enforcement</span><span class="savings-parco">On-chain, fully automated</span><span class="savings-trad">Manual tracking per investor</span></div>
+    </div>
+    <div>
+      <div class="savings-title">Automation Breakdown — ~26 Steps Total</div>
+      <div class="automation-ring">
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#1a2e28" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#0dba9c" stroke-width="8" stroke-dasharray="96 105" stroke-linecap="round"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="8" stroke-dasharray="64 137" stroke-dashoffset="-96" stroke-linecap="round"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#e05c5c" stroke-width="8" stroke-dasharray="41 160" stroke-dashoffset="-160" stroke-linecap="round"/>
+          </svg>
+          <div class="ring-label">
+            <div class="ring-pct">48%</div>
+            <div class="ring-sub">automated</div>
+          </div>
+        </div>
+        <div class="ring-legend">
+          <div class="rl-row"><div class="rl-dot" style="background:var(--auto)"></div>Fully automated — 12 steps (48%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--ai)"></div>AI-assisted — 8 steps (30%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--human)"></div>Human gates — 7 steps (26%)</div>
+          <div class="rl-row"><div class="rl-dot" style="background:var(--hybrid)"></div>Hybrid — 2 steps (8%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>Note on Reg A+ Automation Rate:</strong> The 48% automation rate reflects the inherent legal complexity of SEC qualification — the SEC comment process, PCAOB audit, and ongoing Form 1-K/1-SA filings require qualified professionals by law. However, AI-assistance on the human-required steps (drafting, data prep, deadline tracking) meaningfully reduces cost and time across those steps. The Parco Servicing OS is most critical for Reg A+ issuers — without it, the ongoing reporting obligations alone would require a dedicated compliance staff function.
+  </div>
+
+</div>
+
+<!-- FOOTER NOTE -->
+<div style="padding:24px 48px 48px;border-top:1px solid var(--border);margin-top:0;">
+  <p style="font-size:11px;color:var(--dim);line-height:1.7;">This document is for internal Parco Labs product and operations planning only. It does not constitute legal advice. All regulatory pathway descriptions require review by qualified securities counsel before any offering is launched. Parco Labs does not provide legal advice.</p>
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.pathway').forEach(p => p.classList.remove('active'));
+  document.getElementById('pw-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+function togglePhase(id) {
+  document.getElementById('ph-' + id).classList.toggle('collapsed');
+}
+</script>
+</body>
+</html>
